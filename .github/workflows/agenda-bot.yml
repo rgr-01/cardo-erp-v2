@@ -1,0 +1,31 @@
+# Lembretes do bot no WhatsApp: todo dia às 7h de Brasília (10h UTC) avisa os
+# combinados que vencem no dia; na segunda manda o resumo da semana (áudio +
+# texto). Usa os mesmos secrets do relatório mensal (APP_URL e CRON_SECRET).
+name: Agenda do bot
+
+on:
+  schedule:
+    - cron: "0 10 * * *"
+  workflow_dispatch:
+    inputs:
+      semanal:
+        description: "Mandar o resumo semanal agora (1 = sim)"
+        required: false
+
+jobs:
+  disparar:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Chamar a rota da agenda
+        env:
+          APP_URL: ${{ secrets.APP_URL }}
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+          SEMANAL: ${{ github.event.inputs.semanal }}
+        run: |
+          query=""
+          [ "$SEMANAL" = "1" ] && query="semanal=1"
+          # Primeira chamada acorda o app (Railway com sleep) antes do envio.
+          curl -s -o /dev/null --max-time 60 "$APP_URL/login" || true
+          curl -sS --fail-with-body --max-time 300 \
+            -H "Authorization: Bearer $CRON_SECRET" \
+            "$APP_URL/api/cron/agenda-bot${query:+?$query}"

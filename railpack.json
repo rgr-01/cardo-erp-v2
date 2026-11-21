@@ -1,0 +1,13 @@
+{
+  "$schema": "https://schema.railpack.com",
+  "deploy": {
+    "aptPackages": [
+      "libcairo2",
+      "libpango-1.0-0",
+      "libpangocairo-1.0-0",
+      "libjpeg62-turbo",
+      "libgif7",
+      "librsvg2-2"
+    ]
+  }
+}

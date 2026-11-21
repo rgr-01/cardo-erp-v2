@@ -1,0 +1,614 @@
+@import "tailwindcss";
+
+@layer components {
+  .editor-top-btn {
+    @apply flex items-center gap-2 rounded-lg border border-white/10 bg-white/[0.03] px-3 py-2 text-sm text-zinc-300 transition hover:bg-white/[0.07] hover:text-white disabled:cursor-not-allowed disabled:opacity-35;
+  }
+
+  .editor-field {
+    @apply block text-xs font-medium text-secondary;
+  }
+
+  .editor-field > span {
+    @apply mb-1.5 block;
+  }
+
+  .editor-field input,
+  .editor-field select {
+    @apply w-full rounded-lg border border-white/10 bg-[#14262e] px-3 py-2 text-sm text-white outline-none focus:border-accent disabled:opacity-40;
+  }
+
+  .a4-label {
+    @apply mb-1 block text-[9px] font-bold uppercase tracking-wider text-secondary;
+  }
+}
+
+/* Cores da marca (manual Rede Agro): azul-petróleo #19323b e verde #00DC4D. */
+:root {
+  --text-secondary: #b5c4ca;
+  --text-muted: #a3b8c1;
+  --text-subtle: #a3b8c1;
+  --danger-ink: #ffb4ba;
+  --info-ink: #8cc8ff;
+  --warning-ink: #f8cf7b;
+  --notice-ink: #ffb389;
+  --focus-ring: #00dc4d;
+  --control-border: #76929c;
+  color-scheme: dark;
+  --marca-azul: #19323b;
+  --marca-verde: #00dc4d;
+
+  --background: #10232a;
+  --foreground: #ecf1f3;
+
+  --accent: var(--marca-verde);
+  --accent-foreground: var(--marca-azul);
+  --accent-glow: rgba(0, 220, 77, 0.35);
+  --success: #00b83f;
+  --danger: #ef4444;
+  --surface: #142a32;
+  --surface-border: #24434e;
+  --grid-line: rgba(0, 220, 77, 0.06);
+}
+
+/* Escala estrutural em tons da marca (900 = #19323b).
+   Textos de apoio usam os papéis semânticos definidos separadamente. */
+@theme {
+  --color-zinc-50: #f6f8f9;
+  --color-zinc-100: #ecf1f3;
+  --color-zinc-200: #d6dfe2;
+  --color-zinc-300: #b5c4ca;
+  --color-zinc-400: #8ea3ab;
+  --color-zinc-500: #67818a;
+  --color-zinc-600: #4a6670;
+  --color-zinc-700: #34525d;
+  --color-zinc-800: #24434e;
+  --color-zinc-900: #19323b;
+  --color-zinc-950: #10232a;
+  --color-marca-azul: #19323b;
+  --color-marca-verde: #00dc4d;
+}
+
+@theme inline {
+  --color-secondary: var(--text-secondary);
+  --color-muted: var(--text-muted);
+  --color-subtle: var(--text-subtle);
+  --color-danger-ink: var(--danger-ink);
+  --color-control: var(--control-border);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-success: var(--success);
+  --color-danger: var(--danger);
+  --color-surface: var(--surface);
+  --color-surface-border: var(--surface-border);
+  --font-sans: var(--font-space-grotesk), Arial, Helvetica, sans-serif;
+  --font-mono: var(--font-geist-mono), "Courier New", Courier, monospace;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+}
+
+/* O preflight do Tailwind zera o cursor de <button> pra "default" — como todo
+   botao do site e clicavel de verdade (nunca so decorativo), restaura a
+   maozinha aqui em vez de adicionar cursor-pointer em cada componente. */
+button:not(:disabled),
+[role="button"]:not(:disabled),
+a,
+select,
+summary {
+  cursor: pointer;
+}
+
+button:disabled,
+[role="button"][aria-disabled="true"] {
+  cursor: not-allowed;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: var(--surface);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--text-muted);
+  border-radius: 5px;
+}
+
+::selection {
+  background: var(--accent);
+  color: var(--accent-foreground);
+}
+
+@keyframes float-up {
+  0% {
+    transform: translateY(0);
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-120px);
+    opacity: 0;
+  }
+}
+
+@keyframes grid-scroll {
+  0% {
+    background-position-y: 0;
+  }
+  100% {
+    background-position-y: 64px;
+  }
+}
+
+/* Impressão / "Exportar PDF" do relatório de visita.
+   A interface é escura; no papel isso vira um borrão, então force fundo claro
+   e texto escuro, e esconda a navegação do app. */
+@media print {
+  html,
+  body {
+    background: #fff !important;
+    color: #111 !important;
+  }
+
+  /* Barra lateral e cabeçalhos do shell ficam de fora do papel. */
+  aside,
+  nav,
+  header button,
+  .print\:hidden {
+    display: none !important;
+  }
+
+  main {
+    padding: 0 !important;
+  }
+
+  /* Cards e blocos: sem fundo escuro, com borda discreta pra manter a divisão. */
+  article,
+  section,
+  figure {
+    background: transparent !important;
+    border-color: var(--foreground) !important;
+    break-inside: avoid;
+  }
+
+  h1,
+  h2,
+  p,
+  figcaption,
+  span,
+  td,
+  th {
+    color: #111 !important;
+  }
+
+  img {
+    max-width: 100% !important;
+  }
+}
+
+/* Calendário de visitas (FullCalendar) no tema escuro do app. */
+.calendario-visitas {
+  --fc-border-color: var(--surface-border);
+  --fc-page-bg-color: var(--surface);
+  --fc-neutral-bg-color: var(--color-zinc-950);
+  --fc-list-event-hover-bg-color: var(--color-zinc-800);
+  --fc-today-bg-color: color-mix(in srgb, var(--accent) 7%, var(--surface));
+  --fc-now-indicator-color: var(--accent);
+  --fc-button-text-color: var(--foreground);
+  --fc-button-bg-color: var(--surface);
+  --fc-button-border-color: var(--surface-border);
+  --fc-button-hover-bg-color: var(--color-zinc-800);
+  --fc-button-hover-border-color: var(--text-muted);
+  --fc-button-active-bg-color: var(--accent);
+  --fc-button-active-border-color: var(--accent);
+  --fc-event-text-color: var(--accent-foreground);
+  color: var(--foreground);
+  font-size: 13px;
+}
+
+.calendario-visitas .fc .fc-toolbar-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--foreground);
+  text-transform: none;
+}
+.calendario-visitas .fc .fc-toolbar-title::first-letter { text-transform: uppercase; }
+
+.calendario-visitas .fc .fc-button {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: capitalize;
+  box-shadow: none;
+}
+
+.calendario-visitas .fc .fc-button-primary:not(:disabled).fc-button-active,
+.calendario-visitas .fc .fc-button-primary:not(:disabled):active {
+  color: var(--accent-foreground);
+}
+
+.calendario-visitas .fc .fc-col-header-cell-cushion,
+.calendario-visitas .fc .fc-daygrid-day-number {
+  color: var(--text-secondary);
+  text-transform: capitalize;
+}
+
+.calendario-visitas .fc .fc-day-today .fc-daygrid-day-number {
+  color: var(--accent);
+  font-weight: 700;
+}
+
+/* Dias mais altos e horários mais espaçados: cabem as visitas em 2 linhas. */
+.calendario-visitas .fc .fc-daygrid-day-frame {
+  min-height: 128px;
+}
+
+.calendario-visitas .fc .fc-timegrid-slot {
+  height: 2.6em;
+}
+
+.calendario-visitas .fc .fc-daygrid-dot-event,
+.calendario-visitas .fc .fc-timegrid-event,
+.calendario-visitas .fc .fc-daygrid-block-event {
+  cursor: pointer;
+  border-radius: 6px;
+}
+
+
+/* Visita agendada: só o contorno, tracejado, sem preenchimento. */
+.calendario-visitas .fc .evento-agendado {
+  border-style: dashed;
+  border-width: 1.5px;
+  background: transparent;
+}
+
+.calendario-visitas .fc .fc-daygrid-more-link,
+.calendario-visitas .fc .fc-timegrid-slot-label-cushion,
+.calendario-visitas .fc .fc-timegrid-axis-cushion {
+  color: var(--text-secondary);
+}
+
+.calendario-visitas .fc .fc-popover {
+  background: #142a32;
+}
+
+.calendario-visitas .fc .fc-popover-header {
+  background: var(--surface);
+  color: var(--foreground);
+}
+
+/* Sem as setinhas nativas dos campos numericos (usar NumberInput para -/+). */
+input[type="number"] {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Tabelas de dados: o topo (cabeçalho) fica fixo e só as linhas rolam. */
+.tabela-fixa {
+  max-height: calc(100vh - 15rem);
+  overflow: auto;
+}
+.tabela-fixa > table > thead > tr > th {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  background-color: var(--color-zinc-900);
+  box-shadow: 0 1px 0 var(--surface-border);
+}
+
+/* Painel master Cardo AI (/master): claro e neutro (grafite), para separar
+   bem da área dos clientes. Troca as variáveis que os componentes já usam
+   (zinc invertida, accent, surface), como o tema claro do sistema. */
+.tema-cardo {
+  color-scheme: light;
+  --background: #f4f6f8;
+  --foreground: #111827;
+  --accent: #1f2937;
+  --accent-foreground: #ffffff;
+  --accent-glow: rgba(31, 41, 55, 0.2);
+  --surface: #ffffff;
+  --surface-border: #e2e6ea;
+  --color-white: #111827;
+  --color-zinc-50: #0f172a;
+  --color-zinc-100: #111827;
+  --color-zinc-200: #1f2937;
+  --color-zinc-300: #374151;
+  --color-zinc-400: #4b5563;
+  --color-zinc-500: #6b7280;
+  --color-zinc-600: #9ca3af;
+  --color-zinc-700: #d1d5db;
+  --color-zinc-800: #e5e7eb;
+  --color-zinc-900: #ffffff;
+  --color-zinc-950: #f4f6f8;
+  --color-red-400: #dc2626;
+  --color-emerald-400: #059669;
+  --color-green-400: #16a34a;
+  --color-amber-400: #b45309;
+  background: var(--background);
+  color: var(--foreground);
+}
+
+/* Dark: grafite com fundo verde discreto e o verde vivo da marca nas ações. */
+[data-theme="dark"] {
+  color-scheme: dark;
+  --background: #101713;
+  --foreground: #edf4ef;
+  --surface: #19231d;
+  --surface-border: #34483d;
+  --accent: #00dc4d;
+  --accent-foreground: #102b1b;
+  --text-secondary: #bfcec3;
+  --text-muted: #afc1b5;
+  --text-subtle: #afc1b5;
+  --control-border: #7e9687;
+  --focus-ring: #00dc4d;
+  --color-white: #edf4ef;
+  --color-zinc-600: #536b5c;
+  --color-zinc-700: #344c3c;
+  --color-zinc-800: #2a3b31;
+  --color-zinc-900: #19231d;
+  --color-zinc-950: #101713;
+}
+[data-theme="dark"] .menu-lateral { background: #131d17; }
+[data-theme="dark"] .bg-white {
+  --color-white: #ffffff;
+  --color-zinc-600: #4a6670;
+  --color-zinc-700: #34525d;
+  --color-zinc-800: #24434e;
+  --color-zinc-900: #19323b;
+  --color-zinc-950: #10232a;
+}
+[data-theme="dark"] :is(.recharts-cartesian-axis-tick-value, .recharts-label-list text):not(.bg-white *) { fill: var(--text-muted); }
+[data-theme="dark"] :is(.recharts-tooltip-label, .recharts-tooltip-item, .recharts-legend-item-text):not(.bg-white *) { color: var(--text-secondary) !important; }
+.leaflet-control-attribution a { text-decoration: underline; text-underline-offset: 2px; }
+
+/* Tema claro do sistema (data-theme="light" no <html>, posto pelo AppShell).
+   Mesma técnica do PDF do dashboard (lib/tema-claro.ts): inverte a escala zinc
+   e o "branco" do texto; a interface não muda de classe. */
+[data-theme="light"] {
+  color-scheme: light;
+  --background: #f1f5f6;
+  --foreground: #10232a;
+  --accent: #006d2e;
+  --accent-foreground: #ffffff;
+  --accent-glow: rgba(0, 166, 62, 0.25);
+  --surface: #ffffff;
+  --surface-border: #d6dfe2;
+  --grid-line: rgba(16, 35, 42, 0.05);
+  --color-white: #10232a;
+  --color-zinc-50: #10232a;
+  --color-zinc-100: #19323b;
+  --color-zinc-200: #24434e;
+  --color-zinc-300: #34525d;
+  --color-zinc-400: #4a6670;
+  --color-zinc-500: #5f7983;
+  --color-zinc-600: #8ea3ab;
+  --color-zinc-700: #b5c4ca;
+  --color-zinc-800: #e4eaec;
+  --color-zinc-900: #ffffff;
+  --color-zinc-950: #eef2f3;
+}
+
+/* Folhas brancas (relatórios, documentos, prévias) e .tema-fixo não invertem:
+   o bloco e tudo dentro dele voltam às cores originais. */
+[data-theme="light"] :is(.bg-white, .tema-fixo) {
+  --color-white: #ffffff;
+  --color-zinc-50: #f6f8f9;
+  --color-zinc-100: #ecf1f3;
+  --color-zinc-200: #d6dfe2;
+  --color-zinc-300: #b5c4ca;
+  --color-zinc-400: #8ea3ab;
+  --color-zinc-500: #67818a;
+  --color-zinc-600: #4a6670;
+  --color-zinc-700: #34525d;
+  --color-zinc-800: #24434e;
+  --color-zinc-900: #19323b;
+  --color-zinc-950: #10232a;
+}
+
+/* Gráficos (Recharts) têm as cores do tema escuro fixas no código; no tema
+   claro o CSS vale por cima. Gráficos dentro de folhas brancas não mudam. */
+[data-theme="light"] .recharts-cartesian-grid line:not(:is(.bg-white, .tema-fixo) *) {
+  stroke: #dfe6e9;
+}
+[data-theme="light"] :is(.recharts-cartesian-axis-line, .recharts-cartesian-axis-tick-line):not(:is(.bg-white, .tema-fixo) *) {
+  stroke: #b5c4ca;
+}
+[data-theme="light"] :is(.recharts-cartesian-axis-tick-value, .recharts-label-list text):not(:is(.bg-white, .tema-fixo) *) {
+  fill: #4a6670;
+}
+[data-theme="light"] .recharts-tooltip-cursor:not(:is(.bg-white, .tema-fixo) *) {
+  fill: #e4eaec;
+}
+[data-theme="light"] .recharts-pie-sector path:not(:is(.bg-white, .tema-fixo) *) {
+  stroke: #ffffff;
+}
+[data-theme="light"] .recharts-default-tooltip:not(:is(.bg-white, .tema-fixo) *) {
+  background-color: #ffffff !important;
+  border-color: #d6dfe2 !important;
+  color: #10232a !important;
+  box-shadow: 0 8px 24px -12px rgba(16, 35, 42, 0.35);
+}
+[data-theme="light"] :is(.recharts-tooltip-label, .recharts-tooltip-item, .recharts-legend-item-text):not(:is(.bg-white, .tema-fixo) *) {
+  color: #34525d !important;
+}
+
+/* Editores de relatório: interface escura própria em volta da folha. */
+[data-theme="light"] .tema-fixo {
+  --background: #10232a;
+  --foreground: #ecf1f3;
+  --accent: #00dc4d;
+  --accent-foreground: #19323b;
+  --surface: #142a32;
+  --surface-border: #24434e;
+  color: var(--foreground);
+}
+
+/* Menu lateral: superfície própria nos dois temas. */
+.menu-lateral {
+  background: var(--color-zinc-900);
+  border-right: 1px solid var(--surface-border);
+}
+[data-theme="light"] .menu-lateral {
+  background: #ffffff;
+}
+
+/* Tons "400" (vermelho, verde, âmbar, azul…) são para fundo escuro; no claro
+   viram tons mais fortes para manter contraste. Folhas brancas ficam como são. */
+[data-theme="light"] {
+  --color-red-400: #dc2626;
+  --color-red-300: #b91c1c;
+  --color-emerald-400: #059669;
+  --color-green-400: #16a34a;
+  --color-amber-400: #b45309;
+  --color-amber-300: #92400e;
+  --color-yellow-400: #a16207;
+  --color-blue-400: #2563eb;
+  --color-sky-400: #0284c7;
+  --color-cyan-400: #0891b2;
+  --color-orange-400: #c2410c;
+  --color-violet-400: #7c3aed;
+}
+[data-theme="light"] :is(.bg-white, .tema-fixo) {
+  --color-red-400: #f87171;
+  --color-red-300: #fca5a5;
+  --color-emerald-400: #34d399;
+  --color-green-400: #4ade80;
+  --color-amber-400: #fbbf24;
+  --color-amber-300: #fcd34d;
+  --color-yellow-400: #facc15;
+  --color-blue-400: #60a5fa;
+  --color-sky-400: #38bdf8;
+  --color-cyan-400: #22d3ee;
+  --color-orange-400: #fb923c;
+  --color-violet-400: #a78bfa;
+}
+
+/* Editor de relatório: segue o tema do sistema. No claro, as superfícies
+   escuras fixas no código viram claras; a folha branca e o que está dentro
+   dela (dicas, puxadores) não mudam. */
+[data-theme="light"] .editor-relatorio {
+  background-color: #e9eef0;
+}
+[data-theme="light"] .editor-relatorio :is(.bg-\[\#071014\], .bg-\[\#0a151a\]):not(.bg-white *) {
+  background-color: #e9eef0;
+}
+[data-theme="light"] .editor-relatorio :is(.bg-\[\#0d1a20\], .bg-\[\#0d1a20\]\/95, .bg-\[\#0f1d23\], .bg-\[\#0b171c\]\/95):not(.bg-white *) {
+  background-color: #ffffff;
+}
+[data-theme="light"] .editor-relatorio :is(.bg-\[\#14252d\], .bg-\[\#14252d\]\/95, .bg-\[\#223b46\]):not(.bg-white *) {
+  background-color: #e4eaec;
+}
+[data-theme="light"] .editor-relatorio .editor-field :is(input, select) {
+  background-color: #ffffff;
+}
+
+/* Arraste livre de bloco no editor: mão fechada em qualquer lugar da tela. */
+.arrastando-livre,
+.arrastando-livre * {
+  cursor: grabbing !important;
+  user-select: none !important;
+}
+
+/* Cores de texto independentes da escala usada para as superfícies. */
+:is([data-theme="light"], .tema-cardo, .superficie-clara) {
+  --text-secondary: #34525d;
+  --text-muted: #4a626d;
+  --text-subtle: #4a626d;
+  --danger-ink: #9e1b32;
+  --info-ink: #1d4ed8;
+  --warning-ink: #8c4a05;
+  --notice-ink: #9a420c;
+  --focus-ring: #007a33;
+  --control-border: #6f8790;
+  --color-emerald-400: #006b48;
+  --color-green-400: #00752d;
+  --color-sky-400: #006c9e;
+  --color-cyan-400: #006878;
+}
+.superficie-clara { color-scheme: light; }
+.tema-fixo {
+  --text-secondary: #b5c4ca;
+  --text-muted: #a3b8c1;
+  --text-subtle: #a3b8c1;
+  --danger-ink: #ffb4ba;
+  --info-ink: #8cc8ff;
+  --warning-ink: #f8cf7b;
+  --notice-ink: #ffb389;
+  --focus-ring: #00dc4d;
+}
+/* As prévias brancas mantêm texto escuro dentro do editor de tema fixo. */
+.bg-white {
+  --text-secondary: #34525d;
+  --text-muted: #4a626d;
+  --text-subtle: #4a626d;
+}
+:where(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 3px;
+}
+input, textarea { caret-color: var(--focus-ring); }
+
+/* Operação compacta: superfícies simples, hierarquia por conteúdo. */
+.erp-shell { font-size: 14px; line-height: 1.5; }
+.erp-main h1:not(.editor-relatorio *, .bg-white *) {
+  font-size: clamp(1.5rem, 1.3rem + .3vw, 1.75rem);
+  font-weight: 600;
+  line-height: 1.25;
+  letter-spacing: -.02em;
+  text-wrap: balance;
+}
+.erp-main :is(p, label):not(.editor-relatorio *, .bg-white *) { text-wrap: pretty; }
+.erp-panel, .erp-kpi { border-radius: 10px; }
+.erp-main :is(table, .erp-kpi, .dashboard-compacto) { font-variant-numeric: tabular-nums; }
+.erp-main th:not(.editor-relatorio *, .bg-white *) {
+  text-transform: none;
+  letter-spacing: normal;
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+.erp-main :is(input, select, textarea)[class*="border-surface-border"]:not([type="checkbox"], [type="radio"], [type="range"], [type="color"], .bg-white *, .editor-relatorio *) {
+  border-color: var(--control-border);
+}
+.dashboard-atividade {
+  border: 0;
+  border-top: 1px solid var(--surface-border);
+  border-radius: 0;
+  background: transparent;
+  padding: 20px 0 0;
+}
+.calendario-visitas .fc .fc-toolbar { flex-wrap: wrap; gap: 12px; }
+.calendario-visitas .fc .fc-toolbar-chunk { min-width: 0; }
+.calendario-visitas .fc .fc-toolbar-title { text-wrap: balance; }
+.calendario-visitas .fc .fc-button { min-height: 36px; }
+@media (max-width: 640px) {
+  .calendario-visitas .fc .fc-toolbar { align-items: flex-start; }
+  .calendario-visitas .fc .fc-toolbar-chunk:nth-child(2) { order: -1; width: 100%; }
+  .calendario-visitas .fc .fc-daygrid-day-frame { min-height: 64px; }
+  .calendario-visitas .fc .fc-button { min-height: 44px; }
+  .erp-button, .erp-field { min-height: 44px; }
+  .erp-main .page-heading { align-items: flex-start; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .erp-shell *, .login-compacto * {
+    scroll-behavior: auto !important;
+    transition: none !important;
+  }
+  .erp-shell .animate-pulse { animation: none !important; }
+}

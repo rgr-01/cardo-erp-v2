@@ -1,0 +1,1097 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  ADMIN
+  CONSULTOR
+}
+
+enum StatusVenda {
+  PROSPECCAO
+  NEGOCIACAO
+  // Negocio fechado (orcamento -> Pedido, com ou sem assinatura concluida)
+  // mas ainda sem a conferencia final do administrativo — so depois dela a
+  // venda vira EM_CARTEIRA de fato (ver aprovarConferenciaFinal em
+  // lib/servicos/propostas.ts).
+  FECHADO
+  EM_CARTEIRA
+  FATURADO
+  CANCELADO
+}
+
+enum StatusProposta {
+  RASCUNHO
+  ENVIADA
+  ACEITA
+  RECUSADA
+  CANCELADA
+}
+
+enum TipoProposta {
+  PEDIDO
+  PROPOSTA
+}
+
+// De onde o orcamento/pedido nasceu: WEB (formulario) ou BOT (assistente do
+// WhatsApp) — mostrado na coluna "Origem" de Comercial > Orcamentos.
+enum OrigemProposta {
+  WEB
+  BOT
+}
+
+enum CondicaoPagamentoTipo {
+  AVISTA
+  APRAZO
+}
+
+// So se aplica a Orcamento (tipo PEDIDO): OK = margem >= 27%, segue o fluxo
+// normal. ABAIXO_META = margem < 27%, precisa do gestor aprovar antes de
+// poder virar Pedido (ver aprovarMargem em lib/servicos/margem.ts).
+enum StatusMargem {
+  OK
+  AGUARDANDO_APROVACAO
+  APROVADA_GESTOR
+  RECUSADA_GESTOR
+  // Conferencia final (pos-assinatura) recusada pelo administrativo — volta
+  // pro consultor corrigir, igual RECUSADA_GESTOR (ver recusarConferenciaFinal
+  // em lib/servicos/propostas.ts).
+  RECUSADA_CONFERENCIA
+}
+
+enum StatusAssinatura {
+  NAO_ENVIADA
+  AGUARDANDO_ASSINATURA
+  ASSINADA
+  RECUSADA
+}
+
+// PENDENTE/EMITIDA/CANCELADA cobrem tanto o registro manual (Financeiro
+// preenche depois de emitir por fora) quanto a emissao via Focus NFe.
+// PROCESSANDO e' so da Focus NFe: autorizacao assincrona na SEFAZ, aguardando
+// webhook/varredura confirmar (ver emitirNotaFiscalFocusNfe em
+// lib/servicos/financeiro.ts). ERRO = SEFAZ rejeitou ou a API validou e
+// recusou o payload antes de enviar — mensagemErro em NotaFiscal explica.
+enum StatusNotaFiscal {
+  PENDENTE
+  PROCESSANDO
+  EMITIDA
+  ERRO
+  CANCELADA
+}
+
+enum AmbienteNotaFiscal {
+  HOMOLOGACAO
+  PRODUCAO
+}
+
+enum StatusBoleto {
+  PENDENTE
+  EMITIDO
+  PAGO
+  CANCELADO
+}
+
+// Financeiro avulso (sem pedido): títulos a receber ou a pagar.
+enum TipoTitulo {
+  RECEBER
+  PAGAR
+}
+
+enum StatusTitulo {
+  ABERTO
+  PAGO
+  CANCELADO
+}
+
+enum CategoriaDespesa {
+  COMBUSTIVEL
+  ALIMENTACAO
+  HOSPEDAGEM
+  MANUTENCAO_VEICULO
+  PEDAGIO
+  MATERIAL_ESCRITORIO
+  OUTROS
+}
+
+enum SituacaoDespesa {
+  PAGO
+  A_PAGAR
+}
+
+// Empresa cliente do sistema (tenant). Cada registro pertence a uma empresa;
+// a Rede Agro é a primeira e ficou com todos os dados anteriores.
+model Empresa {
+  id                    String   @id @default(cuid())
+  nomeFantasia          String
+  razaoSocial           String?
+  cnpj                  String?
+  regimeTributario      String?
+  endereco              String?
+  cidadeUfCep           String?
+  // Logos no storage: uma para fundo claro e outra para fundo escuro.
+  logoPath              String?
+  logoEscuroPath        String?
+  // Ícone quadrado da aba do navegador; sem ele vale o da Cardo AI.
+  iconePath             String?
+  corPrimaria           String?
+  // Módulos contratados (src/lib/modulos.ts), ligados no painel Cardo AI.
+  modulos               String[] @default(["CADASTROS", "ESTOQUE", "VENDAS", "ERP", "VISITAS"])
+  ativo                 Boolean  @default(true)
+  // Plano contratado e limites (painel master). Nulo = sem limite.
+  plano                 String?
+  limiteUsuarios        Int?
+  limiteRelatoriosMes   Int?
+  limiteArmazenamentoGb Float?
+  observacoesPlano      String?
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  users                     User[]
+  notasAvulsas              NotaAvulsa[]
+  titulosFinanceiros        TituloFinanceiro[]
+  clientes                  Cliente[]
+  fazendas                  Fazenda[]
+  safras                    Safra[]
+  fornecedors               Fornecedor[]
+  produtos                  Produto[]
+  vendas                    Venda[]
+  propostas                 Proposta[]
+  notaFiscals               NotaFiscal[]
+  boletos                   Boleto[]
+  propostaItems             PropostaItem[]
+  metas                     Meta[]
+  relatorioVisitas          RelatorioVisita[]
+  logosRelatorio            LogoRelatorio[]
+  relatorioVisitaVersaos    RelatorioVisitaVersao[]
+  trabalhos                 Trabalho[]
+  fotoVisitas               FotoVisita[]
+  despesas                  Despesa[]
+  grupoDespesas             GrupoDespesa[]
+  contaDespesas             ContaDespesa[]
+  orcamentoContaDespesas    OrcamentoContaDespesa[]
+  fotoDespesas              FotoDespesa[]
+  whatsAppVinculos          WhatsAppVinculo[]
+  whatsAppSessaos           WhatsAppSessao[]
+  monitoramentoSaudes       MonitoramentoSaude[]
+  whatsAppMensagemRecebidas WhatsAppMensagemRecebida[]
+  historicos                Historico[]
+  numeracoesCadastro        NumeracaoCadastro[]
+
+  combinados Combinado[]
+
+  @@map("empresas")
+}
+
+model User {
+  id                        String            @id @default(cuid())
+  nome                      String
+  email                     String            @unique
+  senhaHash                 String
+  role                      Role              @default(CONSULTOR)
+  // Equipe Cardo AI: enxerga e cria empresas (painel /admin/empresas).
+  superAdmin                Boolean           @default(false)
+  ativo                     Boolean           @default(true)
+  // Módulos da empresa que o admin desligou para este usuário (src/lib/modulos.ts).
+  modulosBloqueados         String[]          @default([])
+  // Cor do consultor no mapa de clientes (#rrggbb), escolhida pelo admin; nulo = cor padrão.
+  corMapa                   String?
+  // Caminho da foto de perfil no storage (bucket de fotos); nulo = iniciais.
+  fotoPath                  String?
+  tentativasLogin           Int               @default(0)
+  bloqueadoAte              DateTime?
+  versaoSessao              Int               @default(0)
+  vendas                    Venda[]
+  propostas                 Proposta[]
+  orcamentosAprovadosMargem Proposta[]        @relation("MargemAprovador")
+  relatoriosVisita          RelatorioVisita[]
+  despesas                  Despesa[]
+  whatsappVinculos          WhatsAppVinculo[]
+  clientes                  Cliente[]
+  createdAt                 DateTime          @default(now())
+  updatedAt                 DateTime          @updatedAt
+
+  empresaId String  @default("empresa_redeagro")
+  empresa   Empresa @relation(fields: [empresaId], references: [id])
+
+  combinados Combinado[]
+
+  @@index([empresaId])
+  @@map("users")
+}
+
+model Cliente {
+  id                String             @id @default(cuid())
+  // O zero é apenas o padrão de entrada: o gatilho atribui o número definitivo.
+  numero            Int                @default(0)
+  nome              String
+  documento         String?
+  razaoSocial       String?
+  inscricaoEstadual String?
+  telefone          String?
+  email             String?
+  endereco          String?
+  cidade            String?
+  uf                String?
+  cep               String?
+  ctv               String?
+  areaPlantio       Float?
+  areaTotal         Float?
+  pctIrrigada       Float?
+  pctArroz          Float?
+  pctSoja           Float?
+  pctMilho          Float?
+  pctAlgodao        Float?
+  pctFeijao         Float?
+  pctTrigo          Float?
+  pctMilho2         Float?
+  pctSorgo2         Float?
+  latitude          Float?
+  longitude         Float?
+  consultor         User?              @relation(fields: [consultorId], references: [id])
+  consultorId       String?
+  vendas            Venda[]
+  propostas         Proposta[]
+  relatoriosVisita  RelatorioVisita[]
+  trabalhos         Trabalho[]
+  despesas          Despesa[]
+  fazendas          Fazenda[]
+  notasAvulsas      NotaAvulsa[]
+  titulos           TituloFinanceiro[]
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+  empresaId         String             @default("empresa_redeagro")
+  empresa           Empresa            @relation(fields: [empresaId], references: [id])
+
+  combinados Combinado[]
+
+  @@unique([empresaId, nome])
+  @@unique([empresaId, numero])
+  @@index([consultorId])
+  @@index([empresaId])
+  @@map("clientes")
+}
+
+// Fazendas (propriedades) de um cliente. Um cliente pode ter várias; o
+// relatório de visita aponta de qual fazenda foi a visita (opcional).
+model Fazenda {
+  id               String            @id @default(cuid())
+  cliente          Cliente           @relation(fields: [clienteId], references: [id], onDelete: Cascade)
+  clienteId        String
+  nome             String
+  cidade           String?
+  uf               String?
+  area             Float?
+  latitude         Float?
+  longitude        Float?
+  relatoriosVisita RelatorioVisita[]
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+  empresaId        String            @default("empresa_redeagro")
+  empresa          Empresa           @relation(fields: [empresaId], references: [id])
+
+  @@unique([clienteId, nome])
+  @@index([empresaId])
+  @@map("fazendas")
+}
+
+model Safra {
+  id                String                  @id @default(cuid())
+  nome              String
+  createdAt         DateTime                @default(now())
+  vendas            Venda[]
+  propostas         Proposta[]
+  metas             Meta[]
+  relatoriosVisita  RelatorioVisita[]
+  trabalhos         Trabalho[]
+  despesas          Despesa[]
+  orcamentosDespesa OrcamentoContaDespesa[]
+
+  empresaId String  @default("empresa_redeagro")
+  empresa   Empresa @relation(fields: [empresaId], references: [id])
+
+  @@unique([empresaId, nome])
+  @@index([empresaId])
+  @@map("safras")
+}
+
+model Fornecedor {
+  id       String    @id @default(cuid())
+  // Sequência independente de clientes, gerada no banco por empresa.
+  numero   Int       @default(0)
+  nome     String
+  produtos Produto[]
+
+  empresaId String  @default("empresa_redeagro")
+  empresa   Empresa @relation(fields: [empresaId], references: [id])
+
+  @@unique([empresaId, nome])
+  @@unique([empresaId, numero])
+  @@index([empresaId])
+  @@map("fornecedores")
+}
+
+// Contador transacional usado pelos gatilhos de clientes e fornecedores.
+model NumeracaoCadastro {
+  empresaId    String
+  tipo         String
+  ultimoNumero Int     @default(0)
+  empresa      Empresa @relation(fields: [empresaId], references: [id], onDelete: Cascade)
+
+  @@id([empresaId, tipo])
+  @@map("numeracoes_cadastro")
+}
+
+model Produto {
+  id               String         @id @default(cuid())
+  nome             String
+  ingredienteAtivo String?
+  embalagem        String?
+  recomendacao     String?
+  // Dados fiscais pra emissao de NF-e via Focus NFe (ver
+  // lib/servicos/financeiro.ts) — nulo bloqueia a emissao automatica desse
+  // produto com mensagem clara, nao trava o cadastro em si. CFOP aqui e'
+  // sempre o de venda dentro do estado (5.xxx); fora do estado (6.xxx) so'
+  // e' resolvido se/quando vendas interestaduais entrarem no fluxo.
+  ncm              String?
+  cfop             String?
+  fornecedor       Fornecedor     @relation(fields: [fornecedorId], references: [id])
+  fornecedorId     String
+  // Precos de venda de REFERENCIA/tabela (a vista ou a prazo) — ja incluem a
+  // margem do gestor, e' o que pre-preenche o Valor ao escolher o produto em
+  // Vendas/Orcamento. NAO sao custo de compra (ver custoCompra abaixo).
+  custoAvista      Decimal?       @db.Decimal(16, 4)
+  custoAprazo      Decimal?       @db.Decimal(16, 4)
+  // Custo de compra de verdade (o que se paga ao fornecedor) — unico, nao
+  // varia por condicao de pagamento. Base real do calculo de margem e das
+  // tabelas minima (27%) e sugerida (30%) no simulador do orcamento (ver
+  // lib/margem.ts). Nulo = produto ainda sem custo cadastrado, margem fica
+  // "sem custo" ate o gestor preencher.
+  custoCompra      Decimal?       @db.Decimal(16, 4)
+  // Margem personalizada do produto (fracao, 0.30 = 30%) usada pra sugerir os
+  // precos de venda a partir do custoCompra. Nulo = margem padrao (30%).
+  margemPct        Decimal?       @db.Decimal(6, 4)
+  vendas           Venda[]
+  propostaItens    PropostaItem[]
+  empresaId        String         @default("empresa_redeagro")
+  empresa          Empresa        @relation(fields: [empresaId], references: [id])
+
+  @@unique([nome, fornecedorId])
+  @@index([empresaId])
+  @@map("produtos")
+}
+
+model Venda {
+  id                    String                @id @default(cuid())
+  consultor             User                  @relation(fields: [consultorId], references: [id])
+  consultorId           String
+  cliente               Cliente               @relation(fields: [clienteId], references: [id])
+  clienteId             String
+  produto               Produto               @relation(fields: [produtoId], references: [id])
+  produtoId             String
+  propostaItens         PropostaItem[]
+  cultura               String?
+  volume                Float?
+  // A vista/a prazo — define qual custo do Produto (custoAvista/custoAprazo)
+  // pre-preenche valorUnitario ao escolher o produto na venda. So um valor
+  // de referencia inicial, o vendedor pode editar livremente depois.
+  condicaoPagamentoTipo CondicaoPagamentoTipo @default(AVISTA)
+  valorUnitario         Decimal?              @db.Decimal(16, 4)
+  valorTotal            Decimal               @default(0) @db.Decimal(16, 4)
+  status                StatusVenda           @default(PROSPECCAO)
+  dataFechamento        DateTime?
+  previsaoEntrega       DateTime?
+  observacoes           String?
+  safra                 Safra                 @relation(fields: [safraId], references: [id])
+  safraId               String
+  createdAt             DateTime              @default(now())
+  updatedAt             DateTime              @updatedAt
+  empresaId             String                @default("empresa_redeagro")
+  empresa               Empresa               @relation(fields: [empresaId], references: [id])
+
+  @@index([consultorId])
+  @@index([clienteId])
+  @@index([status])
+  @@index([safraId, consultorId])
+  @@index([empresaId])
+  @@map("vendas")
+}
+
+model Proposta {
+  id                    String                @id @default(cuid())
+  numero                Int                   @unique @default(autoincrement())
+  cliente               Cliente               @relation(fields: [clienteId], references: [id])
+  clienteId             String
+  consultor             User                  @relation(fields: [consultorId], references: [id])
+  consultorId           String
+  tipo                  TipoProposta          @default(PROPOSTA)
+  origem                OrigemProposta        @default(WEB)
+  status                StatusProposta        @default(RASCUNHO)
+  safra                 Safra                 @relation(fields: [safraId], references: [id])
+  safraId               String
+  validade              DateTime?
+  // Pedido: data de faturamento. A 1a parcela sai nesta data e as demais seguem pelos dias
+  // da condicao de pagamento. Orcamento usa `validade` no lugar.
+  dataFaturamento       DateTime?
+  // Quem assina o pedido (nome/e-mail do cliente, vendedor, administrativo e outros). Os nomes
+  // saem nos campos de assinatura do PDF. Lista de { papel, nome, email?, rotulo? }.
+  signatarios           Json?
+  previsaoEntrega       DateTime?
+  // Dados logísticos informados no orçamento e reaproveitados no pedido.
+  // Permanecem opcionais no banco para preservar documentos antigos, mas a
+  // tela Web exige ambos antes de salvar/visualizar um documento novo.
+  localEntrega          String?
+  frete                 String?
+  condicaoPagamento     String?
+  // Condicao estruturada (a vista/a prazo) que define qual custo do Produto
+  // (custoAvista/custoAprazo) entra no calculo de margem — condicaoPagamento
+  // acima continua sendo so o texto livre (ex.: "30/60/90 dias") exibido no PDF.
+  condicaoPagamentoTipo CondicaoPagamentoTipo @default(AVISTA)
+  observacoes           String?
+  // Complemento livre aos termos padrão exibidos em toda PROPOSTA (ver
+  // TERMOS_PADRAO_PROPOSTA em lib/pdf.ts); opcional, só PROPOSTA usa.
+  termosCondicoes       String?
+  subtotal              Decimal               @default(0) @db.Decimal(16, 4)
+  desconto              Decimal               @default(0) @db.Decimal(16, 4)
+  total                 Decimal               @default(0) @db.Decimal(16, 4)
+  itens                 PropostaItem[]
+  // Margem so se aplica a Orcamento (tipo PEDIDO) — ver lib/margem.ts.
+  margemPct             Float?
+  statusMargem          StatusMargem          @default(OK)
+  margemAprovadorId     String?
+  margemAprovador       User?                 @relation("MargemAprovador", fields: [margemAprovadorId], references: [id])
+  margemAprovadaEm      DateTime?
+  margemMotivoRecusa    String?
+  // Assinatura digital (D4Sign): uuid do documento na D4Sign, status da
+  // assinatura, e onde ficou o PDF assinado + certificado de autenticidade
+  // depois de baixados do webhook e subidos pro Supabase Storage.
+  d4signDocumentoId     String?               @unique
+  // Link direto de assinatura do cliente no D4Sign (assinatura_presencial_link)
+  // — o bot manda pro consultor encaminhar pelo WhatsApp; o cliente também
+  // recebe por e-mail como sempre. Nulo se o D4Sign não devolveu link.
+  linkAssinaturaCliente String?
+  statusAssinatura      StatusAssinatura      @default(NAO_ENVIADA)
+  pdfAssinadoUrl        String?
+  assinadaEm            DateTime?
+  // Autorização do administrativo pra faturar (botão "Faturar" em Em
+  // Carteira) — só depois disso o pedido aparece em Notas Fiscais/Boletos
+  // pra emitir (ver autorizarFaturamento em lib/servicos/financeiro.ts).
+  // Nulo = ainda não autorizado.
+  autorizadoFaturarEm   DateTime?
+  notaFiscal            NotaFiscal?
+  boleto                Boleto?
+  createdAt             DateTime              @default(now())
+  updatedAt             DateTime              @updatedAt
+  empresaId             String                @default("empresa_redeagro")
+  empresa               Empresa               @relation(fields: [empresaId], references: [id])
+
+  @@index([clienteId])
+  @@index([consultorId])
+  @@index([tipo])
+  @@index([status])
+  @@index([safraId, tipo])
+  @@index([empresaId])
+  @@map("propostas")
+}
+
+// Duas formas de preencher: manual (Financeiro digita os dados depois de
+// emitir por fora) ou automatica via Focus NFe (ver emitirNotaFiscalFocusNfe
+// em lib/servicos/financeiro.ts) — referencia/ambiente/mensagemErro so fazem
+// sentido nessa segunda. Assim que existir NotaFiscal EMITIDA + Boleto
+// EMITIDO/PAGO pro pedido, a Venda vira FATURADO sozinha (ver
+// marcarFaturadoSeCompleto) — o dropdown manual de status da Venda nao
+// oferece mais essa opcao.
+model NotaFiscal {
+  id           String              @id @default(cuid())
+  proposta     Proposta            @relation(fields: [propostaId], references: [id])
+  propostaId   String              @unique
+  status       StatusNotaFiscal    @default(PENDENTE)
+  numero       String?
+  serie        String?
+  chaveAcesso  String?
+  valor        Decimal?            @db.Decimal(16, 4)
+  dataEmissao  DateTime?
+  pdfUrl       String?
+  xmlUrl       String?
+  observacoes  String?
+  criadoPor    String?
+  // Preenchidos so quando emitida via Focus NFe (nulo = registro manual).
+  // referencia e' o identificador que a gente escolhe e manda pra Focus NFe
+  // (nao e' o numero da NF) — usado pra consultar status e pra casar o
+  // callback do webhook com esta nota; muda a cada nova tentativa de emissao
+  // (ver gerarReferencia em lib/servicos/financeiro.ts) porque a Focus NFe
+  // nao deixa reemitir em cima da mesma referencia depois de erro.
+  referencia   String?             @unique
+  ambiente     AmbienteNotaFiscal?
+  mensagemErro String?
+  createdAt    DateTime            @default(now())
+  updatedAt    DateTime            @updatedAt
+  empresaId    String              @default("empresa_redeagro")
+  empresa      Empresa             @relation(fields: [empresaId], references: [id])
+
+  @@index([status])
+  @@index([empresaId])
+  @@map("notas_fiscais")
+}
+
+model Boleto {
+  id              String       @id @default(cuid())
+  proposta        Proposta     @relation(fields: [propostaId], references: [id])
+  propostaId      String       @unique
+  status          StatusBoleto @default(PENDENTE)
+  numeroDocumento String?
+  valor           Decimal?     @db.Decimal(16, 4)
+  vencimento      DateTime?
+  dataPagamento   DateTime?
+  linhaDigitavel  String?
+  pdfUrl          String?
+  observacoes     String?
+  criadoPor       String?
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+  empresaId       String       @default("empresa_redeagro")
+  empresa         Empresa      @relation(fields: [empresaId], references: [id])
+
+  @@index([status])
+  @@index([empresaId])
+  @@map("boletos")
+}
+
+// Nota fiscal sem pedido (empresa que usa só o Financeiro, ou venda fora do
+// sistema). provedor: MANUAL = emitida por fora e registrada aqui; os outros
+// (SIAGRI...) emitem pela integração em src/lib/fiscal/provedores.ts.
+model NotaAvulsa {
+  id                String             @id @default(cuid())
+  cliente           Cliente            @relation(fields: [clienteId], references: [id])
+  clienteId         String
+  naturezaOperacao  String
+  cfop              String?
+  // [{ descricao, ncm?, unidade, quantidade, valorUnitario }]
+  itens             Json
+  valorTotal        Decimal            @db.Decimal(16, 4)
+  status            StatusNotaFiscal   @default(PENDENTE)
+  numero            String?
+  serie             String?
+  chaveAcesso       String?
+  dataEmissao       DateTime?
+  pdfUrl            String?
+  xmlUrl            String?
+  observacoes       String?
+  provedor          String             @default("MANUAL")
+  referenciaExterna String?
+  mensagemErro      String?
+  criadoPor         String?
+  titulos           TituloFinanceiro[]
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+  empresaId         String             @default("empresa_redeagro")
+  empresa           Empresa            @relation(fields: [empresaId], references: [id])
+
+  @@index([empresaId])
+  @@map("notas_avulsas")
+}
+
+// Conta a receber ou a pagar lançada à mão (sem pedido nem despesa). A
+// receber pode levar boleto (linha digitável/PDF, por fora ou pelo provedor).
+// Parcelado = um título por parcela, com parcela/totalParcelas.
+model TituloFinanceiro {
+  id                String       @id @default(cuid())
+  tipo              TipoTitulo
+  status            StatusTitulo @default(ABERTO)
+  descricao         String
+  cliente           Cliente?     @relation(fields: [clienteId], references: [id])
+  clienteId         String?
+  // Fornecedor/favorecido livre (a pagar) ou pagador sem cadastro.
+  favorecido        String?
+  categoria         String?
+  documento         String?
+  valor             Decimal      @db.Decimal(16, 4)
+  vencimento        DateTime
+  dataPagamento     DateTime?
+  parcela           Int          @default(1)
+  totalParcelas     Int          @default(1)
+  linhaDigitavel    String?
+  boletoPdfUrl      String?
+  provedorBoleto    String?
+  referenciaExterna String?
+  notaAvulsa        NotaAvulsa?  @relation(fields: [notaAvulsaId], references: [id])
+  notaAvulsaId      String?
+  observacoes       String?
+  criadoPor         String?
+  createdAt         DateTime     @default(now())
+  updatedAt         DateTime     @updatedAt
+  empresaId         String       @default("empresa_redeagro")
+  empresa           Empresa      @relation(fields: [empresaId], references: [id])
+
+  @@index([empresaId, tipo, status])
+  @@map("titulos_financeiros")
+}
+
+model PropostaItem {
+  id                    String                @id @default(cuid())
+  proposta              Proposta              @relation(fields: [propostaId], references: [id], onDelete: Cascade)
+  propostaId            String
+  produto               Produto               @relation(fields: [produtoId], references: [id])
+  produtoId             String
+  venda                 Venda?                @relation(fields: [vendaId], references: [id])
+  vendaId               String?
+  cultura               String?
+  volume                Float?
+  unidade               String?
+  valorUnitario         Decimal?              @db.Decimal(16, 4)
+  // Orcamento cotado a vista E a prazo: valorUnitario e' o preco a vista e
+  // este o a prazo. Nulo = preco unico (como sempre foi). Antes de virar
+  // pedido escolhe-se um dos dois, que vai pra valorUnitario, e este zera.
+  valorUnitarioAprazo   Decimal?              @db.Decimal(16, 4)
+  total                 Decimal               @default(0) @db.Decimal(16, 4)
+  ordem                 Int                   @default(0)
+  // Sobrescrevem o cadastro do Produto so' pra este item, sem alterar o
+  // cadastro em si (ver Produto.ingredienteAtivo/embalagem/recomendacao) —
+  // nulo = usa o valor atual do cadastro do produto.
+  ingredienteAtivo      String?
+  embalagem             String?
+  recomendacao          String?
+  // A vista/a prazo POR ITEM — cada produto pode ter uma condicao diferente
+  // (a negociacao pode mudar item a item). Define qual custo do Produto
+  // (custoAvista/custoAprazo) entra no calculo de margem deste item; ao
+  // salvar, tambem atualiza a Venda vinculada (ver montarItens em
+  // lib/pedidos.ts) — sincroniza o que foi decidido aqui de volta pra ela.
+  condicaoPagamentoTipo CondicaoPagamentoTipo @default(AVISTA)
+  // Custo unitario do Produto (custoAvista ou custoAprazo, conforme
+  // condicaoPagamentoTipo do item) no momento da criacao/edicao do item —
+  // congelado pra nao recalcular a margem retroativamente se o custo do
+  // produto mudar depois. Nulo em itens de propostas antigas.
+  custoUnitario         Decimal?              @db.Decimal(16, 4)
+  // Desconto em % so' deste item, aplicado sobre valorUnitario (que fica bruto).
+  // total do item ja vem liquido; Proposta.desconto guarda a soma em R$.
+  descontoPct           Decimal               @default(0) @db.Decimal(7, 4)
+  empresaId             String                @default("empresa_redeagro")
+  empresa               Empresa               @relation(fields: [empresaId], references: [id])
+
+  @@index([propostaId])
+  @@index([vendaId])
+  @@index([empresaId])
+  @@map("proposta_itens")
+}
+
+model Meta {
+  id      String  @id @default(cuid())
+  safra   Safra   @relation(fields: [safraId], references: [id])
+  safraId String  @unique
+  valor   Decimal @db.Decimal(16, 4)
+
+  empresaId String  @default("empresa_redeagro")
+  empresa   Empresa @relation(fields: [empresaId], references: [id])
+
+  @@index([empresaId])
+  @@map("metas")
+}
+
+model RelatorioVisita {
+  id                         String                  @id @default(cuid())
+  cliente                    Cliente                 @relation(fields: [clienteId], references: [id])
+  clienteId                  String
+  // Fazenda do cliente onde foi a visita (opcional; clientes antigos não têm).
+  fazenda                    Fazenda?                @relation(fields: [fazendaId], references: [id], onDelete: SetNull)
+  fazendaId                  String?
+  consultor                  User                    @relation(fields: [consultorId], references: [id])
+  consultorId                String
+  safra                      Safra                   @relation(fields: [safraId], references: [id])
+  safraId                    String
+  dataVisita                 DateTime                @default(now())
+  // VISITA (relato de campo) | TECNICO (laudo/ensaio, capa própria no PDF).
+  // Mesma base pros dois — só muda a capa gerada e como o bot conduz a conversa.
+  tipo                       String                  @default("VISITA")
+  titulo                     String?
+  // Relato em texto puro: e o que o bot do WhatsApp grava e o que a busca usa.
+  texto                      String
+  // Documento de blocos do editor web (texto/foto/grafico). Nulo nos relatorios
+  // antigos, que sao convertidos a partir de `texto` + `fotos` na primeira edicao.
+  conteudo                   Json?
+  // Fluxo editorial do documento, separado do status operacional da visita.
+  // RASCUNHO | EM_REVISAO | APROVADO
+  statusDocumento            String                  @default("RASCUNHO")
+  aprovadoEm                 DateTime?
+  tokenCompartilhamento      String?                 @unique
+  // Check-in/check-out pelo WhatsApp ("cheguei na fazenda" / "saindo"). Nulos
+  // em relatorios criados sem check-in (ex.: criar_relatorio_visita direto).
+  status                     String                  @default("FECHADA") // ABERTA | FECHADA | AGENDADA
+  finalidade                 String?
+  kmChegada                  Float?
+  kmSaida                    Float?
+  horaChegada                DateTime?
+  horaSaida                  DateTime?
+  latitude                   Float?
+  longitude                  Float?
+  // COMERCIAL | TECNICA | POS_VENDA | RELACIONAMENTO. Independe de `tipo` (que
+  // só decide a capa do PDF). Nulo em relatorios antigos: a UI deduz do tipo.
+  categoria                  String?
+  // O que a capa/rastreamento do PDF mostra (configuravel em Propriedades).
+  mostrarLocalizacao         Boolean                 @default(true)
+  mostrarHorarios            Boolean                 @default(true)
+  // PDF/leitura sem página de capa (escolha na aba Capa do editor).
+  semCapa                    Boolean                 @default(false)
+  // Logo do parceiro/fornecedor anexada no editor: path no storage. Aparece à
+  // direita do cabeçalho do relatório (tela e PDF). Nulo = sem logo.
+  logoParceiroPath           String?
+  // Texto acima da logo ("Em parceria com"); nulo = logo sem rótulo (ex.: um
+  // programa da própria empresa, como o DTR).
+  logoParceiroRotulo         String?
+  // Logo da esquerda (capa e cabeçalho) escolhida na biblioteca; nulo = logo
+  // da empresa (Configurações › Marca).
+  logoPrincipalPath          String?
+  // Tamanho das logos (1 = padrão), ajustado no editor com − / +.
+  escalaLogoPrincipal        Float                   @default(1)
+  // Texto ao lado da logo da esquerda na capa: 1ª linha = rótulo pequeno
+  // ("PROGRAMA"), 2ª = nome ("Difusão de Tecnologia"). Nulo = sem texto.
+  logoPrincipalTexto         String?
+  escalaLogoPrincipalPaginas Float                   @default(1)
+  escalaLogoParceiro         Float                   @default(1)
+  escalaLogoParceiroPaginas  Float                   @default(1)
+  // PAISAGEM | RETRATO: folha A4 do PDF. Os antigos ficaram em RETRATO.
+  orientacao                 String                  @default("PAISAGEM")
+  // Relatorios importados de outra plataforma (TBDC): chave de deduplicacao
+  // e link do relatorio original.
+  idExterno                  String?                 @unique
+  linkExterno                String?
+  // Trabalho da safra (ensaio, area demonstrativa...) ao qual o relatorio
+  // pertence; nulo = avulso.
+  trabalho                   Trabalho?               @relation(fields: [trabalhoId], references: [id], onDelete: SetNull)
+  trabalhoId                 String?
+  fotos                      FotoVisita[]
+  versoes                    RelatorioVisitaVersao[]
+  combinados                 Combinado[]
+  createdAt                  DateTime                @default(now())
+  updatedAt                  DateTime                @updatedAt
+  empresaId                  String                  @default("empresa_redeagro")
+  empresa                    Empresa                 @relation(fields: [empresaId], references: [id])
+
+  @@index([trabalhoId])
+  @@index([clienteId, dataVisita])
+  @@index([consultorId, dataVisita])
+  @@index([safraId])
+  @@index([dataVisita])
+  @@index([consultorId, status])
+  @@index([fazendaId])
+  @@index([empresaId])
+  @@map("relatorios_visita")
+}
+
+// Foto imutável do documento em um salvamento manual. Autosave não cria
+// versões, para que o histórico permaneça útil e enxuto.
+model RelatorioVisitaVersao {
+  id          String          @id @default(cuid())
+  relatorio   RelatorioVisita @relation(fields: [relatorioId], references: [id], onDelete: Cascade)
+  relatorioId String
+  numero      Int
+  titulo      String?
+  texto       String
+  conteudo    Json?
+  // BOT = cópia de antes de uma mudança feita pelo WhatsApp ("volta como
+  // estava" desfaz a partir daqui); nulo = salvamento manual no editor.
+  origem      String?
+  criadoEm    DateTime        @default(now())
+  empresaId   String          @default("empresa_redeagro")
+  empresa     Empresa         @relation(fields: [empresaId], references: [id])
+
+  @@unique([relatorioId, numero])
+  @@index([relatorioId, criadoEm])
+  @@index([empresaId])
+  @@map("relatorios_visita_versoes")
+}
+
+// Trabalho da safra: area demonstrativa, ensaio, vitrine ou dia de campo, com
+// os relatorios tecnicos de cada um. Relatorios sem trabalho ficam "avulsos".
+model Trabalho {
+  id               String            @id @default(cuid())
+  nome             String
+  // AREA_DEMONSTRATIVA | ENSAIO | VITRINE | DIA_DE_CAMPO
+  tipo             String
+  // PLANEJADO | EM_ANDAMENTO | CONCLUIDO
+  status           String            @default("PLANEJADO")
+  produto          String?
+  fornecedor       String?
+  cultura          String?
+  safra            Safra             @relation(fields: [safraId], references: [id])
+  safraId          String
+  clientes         Cliente[]
+  campos           Int               @default(1)
+  visitasPrevistas Int               @default(0)
+  dataPrevista     DateTime?
+  observacao       String?
+  relatorios       RelatorioVisita[]
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+  empresaId        String            @default("empresa_redeagro")
+  empresa          Empresa           @relation(fields: [empresaId], references: [id])
+
+  @@index([safraId, status])
+  @@index([empresaId])
+  @@map("trabalhos")
+}
+
+model FotoVisita {
+  id          String          @id @default(cuid())
+  relatorio   RelatorioVisita @relation(fields: [relatorioId], references: [id], onDelete: Cascade)
+  relatorioId String
+  url         String
+  path        String
+  legenda     String?
+  ordem       Int             @default(0)
+  createdAt   DateTime        @default(now())
+  empresaId   String          @default("empresa_redeagro")
+  empresa     Empresa         @relation(fields: [empresaId], references: [id])
+
+  @@index([relatorioId])
+  @@index([empresaId])
+  @@map("fotos_visita")
+}
+
+model Despesa {
+  id              String           @id @default(cuid())
+  consultor       User             @relation(fields: [consultorId], references: [id])
+  consultorId     String
+  cliente         Cliente?         @relation(fields: [clienteId], references: [id])
+  clienteId       String?
+  safra           Safra            @relation(fields: [safraId], references: [id])
+  safraId         String
+  categoria       CategoriaDespesa @default(OUTROS)
+  valor           Decimal          @db.Decimal(16, 4)
+  data            DateTime         @default(now())
+  estabelecimento String?
+  descricao       String?
+  origemOcr       Boolean          @default(false)
+  // Plano de contas: estabelecimento = fornecedor, descricao = histórico.
+  // "Vencido" não é gravado: é A_PAGAR com vencimento no passado.
+  conta           ContaDespesa?    @relation(fields: [contaId], references: [id])
+  contaId         String?
+  documento       String?
+  vencimento      DateTime?
+  situacao        SituacaoDespesa  @default(PAGO)
+  filial          String?
+  fotos           FotoDespesa[]
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  empresaId       String           @default("empresa_redeagro")
+  empresa         Empresa          @relation(fields: [empresaId], references: [id])
+
+  @@index([contaId])
+  @@index([consultorId, data])
+  @@index([clienteId])
+  @@index([safraId])
+  @@index([data])
+  @@index([empresaId])
+  @@map("despesas")
+}
+
+model GrupoDespesa {
+  id     String         @id @default(cuid())
+  nome   String
+  ordem  Int            @default(0)
+  contas ContaDespesa[]
+
+  empresaId String  @default("empresa_redeagro")
+  empresa   Empresa @relation(fields: [empresaId], references: [id])
+
+  @@index([empresaId])
+  @@map("grupos_despesa")
+}
+
+model ContaDespesa {
+  id              String                  @id @default(cuid())
+  codigo          String
+  nome            String
+  grupo           GrupoDespesa            @relation(fields: [grupoId], references: [id])
+  grupoId         String
+  ordem           Int                     @default(0)
+  ativo           Boolean                 @default(true)
+  // Orçamento mensal sugerido para safras novas.
+  orcamentoPadrao Decimal                 @default(0) @db.Decimal(16, 4)
+  despesas        Despesa[]
+  orcamentos      OrcamentoContaDespesa[]
+  empresaId       String                  @default("empresa_redeagro")
+  empresa         Empresa                 @relation(fields: [empresaId], references: [id])
+
+  @@unique([empresaId, codigo])
+  @@index([grupoId])
+  @@index([empresaId])
+  @@map("contas_despesa")
+}
+
+// Orçamento mensal (consolidado, todas as filiais) de uma conta numa safra.
+model OrcamentoContaDespesa {
+  id          String       @id @default(cuid())
+  conta       ContaDespesa @relation(fields: [contaId], references: [id], onDelete: Cascade)
+  contaId     String
+  safra       Safra        @relation(fields: [safraId], references: [id], onDelete: Cascade)
+  safraId     String
+  valorMensal Decimal      @db.Decimal(16, 4)
+  empresaId   String       @default("empresa_redeagro")
+  empresa     Empresa      @relation(fields: [empresaId], references: [id])
+
+  @@unique([contaId, safraId])
+  @@index([empresaId])
+  @@map("orcamentos_conta_despesa")
+}
+
+model FotoDespesa {
+  id        String   @id @default(cuid())
+  despesa   Despesa  @relation(fields: [despesaId], references: [id], onDelete: Cascade)
+  despesaId String
+  url       String
+  path      String
+  ordem     Int      @default(0)
+  createdAt DateTime @default(now())
+  empresaId String   @default("empresa_redeagro")
+  empresa   Empresa  @relation(fields: [empresaId], references: [id])
+
+  @@index([despesaId])
+  @@index([empresaId])
+  @@map("fotos_despesa")
+}
+
+// Um registro por número de WhatsApp. O admin pode ter vários números; o
+// consultor fica limitado a um (regra em lib/whatsapp/vinculo.ts).
+model WhatsAppVinculo {
+  id                         String    @id @default(cuid())
+  user                       User      @relation(fields: [userId], references: [id])
+  userId                     String
+  waId                       String?   @unique
+  codigo                     String?
+  codigoExpiraEm             DateTime?
+  // Como o bot responde: ESPELHAR (áudio se a pessoa mandou áudio, texto se
+  // mandou texto) | AUDIO (sempre voz) | TEXTO (nunca voz).
+  modoResposta               String    @default("ESPELHAR")
+  // Já mandou a dica de como trocar o modo na primeira resposta em áudio.
+  avisoAudioEnviado          Boolean   @default(false)
+  // Admin escolhe, por número, se recebe o relato mensal de visitas.
+  receberRelatorioMensal     Boolean   @default(false)
+  receberAlertasSeguranca    Boolean   @default(false)
+  receberAlertasMargem       Boolean   @default(false)
+  receberNotificacoesPedidos Boolean   @default(false)
+  createdAt                  DateTime  @default(now())
+  updatedAt                  DateTime  @updatedAt
+  empresaId                  String    @default("empresa_redeagro")
+  empresa                    Empresa   @relation(fields: [empresaId], references: [id])
+
+  @@index([userId])
+  @@index([empresaId])
+  @@map("whatsapp_vinculos")
+}
+
+model WhatsAppSessao {
+  waId         String   @id
+  estado       Json
+  atualizadoEm DateTime @updatedAt
+
+  empresaId String  @default("empresa_redeagro")
+  empresa   Empresa @relation(fields: [empresaId], references: [id])
+
+  @@index([empresaId])
+  @@map("whatsapp_sessoes")
+}
+
+// Estado persistente dos componentes verificados pelo cron de saúde. Evita
+// repetir alertas e permite avisar quando um serviço volta a funcionar.
+model MonitoramentoSaude {
+  componente String   @id
+  saudavel   Boolean  @default(true)
+  detalhe    String?
+  alteradoEm DateTime @updatedAt
+
+  empresaId String  @default("empresa_redeagro")
+  empresa   Empresa @relation(fields: [empresaId], references: [id])
+
+  @@index([empresaId])
+  @@map("monitoramento_saude")
+}
+
+// Fila persistente do webhook: toda mensagem recebida é gravada aqui antes de
+// responder 200 ao provedor. O consultor passa o dia sem internet na fazenda
+// e o WhatsApp manda tudo de uma vez quando o sinal volta — se o servidor
+// reiniciar no meio dessa rajada, nada se perde: a varredura retoma daqui.
+model WhatsAppMensagemRecebida {
+  // Id da mensagem no provedor: a chave primária já descarta reentregas.
+  id               String    @id
+  waId             String
+  mensagem         Json
+  // Quando o consultor enviou (relógio do WhatsApp), não quando chegou aqui.
+  enviadaEm        DateTime
+  recebidaEm       DateTime  @default(now())
+  processandoDesde DateTime?
+  processadaEm     DateTime?
+  tentativas       Int       @default(0)
+  empresaId        String    @default("empresa_redeagro")
+  empresa          Empresa   @relation(fields: [empresaId], references: [id])
+
+  @@index([waId, processadaEm])
+  @@index([processadaEm, recebidaEm])
+  @@index([empresaId])
+  @@map("whatsapp_mensagens_recebidas")
+}
+
+model Historico {
+  id          String   @id @default(cuid())
+  usuarioNome String
+  acao        String
+  entidade    String
+  detalhes    String
+  createdAt   DateTime @default(now())
+  empresaId   String   @default("empresa_redeagro")
+  empresa     Empresa  @relation(fields: [empresaId], references: [id])
+
+  @@index([createdAt])
+  @@index([empresaId])
+  @@map("historico")
+}
+
+// Biblioteca de logos dos relatórios (Configurações): parceiros (Koppert...) e
+// programas da própria empresa (DTR...). Escolher uma no editor copia o path
+// pro relatório — o arquivo é compartilhado, não é apagado com o relatório.
+model LogoRelatorio {
+  id        String   @id @default(cuid())
+  nome      String
+  // PARCEIRO (sai com "Em parceria com") | PROGRAMA (sai sem rótulo)
+  tipo      String   @default("PARCEIRO")
+  path      String
+  createdAt DateTime @default(now())
+  empresaId String   @default("empresa_redeagro")
+  empresa   Empresa  @relation(fields: [empresaId], references: [id])
+
+  @@index([empresaId])
+  @@map("logos_relatorio")
+}
+
+// O que o consultor combinou numa visita ("volto quinta pra ver a aplicação",
+// "levar amostra de solo"). O bot registra, lembra no dia e cobra na próxima
+// visita ao cliente.
+model Combinado {
+  id           String           @id @default(cuid())
+  texto        String
+  dataPrevista DateTime?
+  // PENDENTE | FEITO | CANCELADO
+  status       String           @default("PENDENTE")
+  concluidoEm  DateTime?
+  // Último lembrete mandado no WhatsApp (evita repetir no mesmo dia).
+  avisadoEm    DateTime?
+  cliente      Cliente          @relation(fields: [clienteId], references: [id], onDelete: Cascade)
+  clienteId    String
+  relatorio    RelatorioVisita? @relation(fields: [relatorioId], references: [id], onDelete: SetNull)
+  relatorioId  String?
+  consultor    User             @relation(fields: [consultorId], references: [id])
+  consultorId  String
+  createdAt    DateTime         @default(now())
+  updatedAt    DateTime         @updatedAt
+  empresaId    String           @default("empresa_redeagro")
+  empresa      Empresa          @relation(fields: [empresaId], references: [id])
+
+  @@index([consultorId, status, dataPrevista])
+  @@index([clienteId, status])
+  @@index([empresaId])
+  @@map("combinados")
+}

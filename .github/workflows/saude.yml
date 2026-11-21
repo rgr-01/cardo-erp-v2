@@ -1,0 +1,19 @@
+name: Monitoramento de saúde
+
+on:
+  schedule:
+    - cron: "*/5 * * * *"
+  workflow_dispatch:
+
+jobs:
+  verificar:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Verificar aplicação
+        env:
+          APP_URL: ${{ secrets.APP_URL }}
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+        run: |
+          curl -sS --fail-with-body --max-time 60 \
+            -H "Authorization: Bearer $CRON_SECRET" \
+            "$APP_URL/api/cron/saude"

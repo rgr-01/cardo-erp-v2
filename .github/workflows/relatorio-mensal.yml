@@ -1,0 +1,41 @@
+# Dispara o relato mensal de visitas no WhatsApp dos admins.
+# Roda nos dias 28-31 às 20h de Brasília (23h UTC); a rota só envia de
+# verdade quando é o último dia do mês, então fevereiro e meses de 30 dias
+# funcionam sem regra especial aqui.
+#
+# Precisa dos secrets do repositório:
+#   APP_URL      ex.: https://redeagro.up.railway.app
+#   CRON_SECRET  o mesmo valor da variável CRON_SECRET no Railway
+name: Relatório mensal de visitas
+
+on:
+  schedule:
+    - cron: "0 23 28-31 * *"
+  workflow_dispatch:
+    inputs:
+      mes:
+        description: "Competência AAAA-MM (vazio = mês atual, só no último dia)"
+        required: false
+      reenviar:
+        description: "Reenviar pra quem já recebeu (1 = sim)"
+        required: false
+
+jobs:
+  disparar:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Chamar a rota do relatório
+        env:
+          APP_URL: ${{ secrets.APP_URL }}
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+          MES: ${{ github.event.inputs.mes }}
+          REENVIAR: ${{ github.event.inputs.reenviar }}
+        run: |
+          query=""
+          [ -n "$MES" ] && query="mes=$MES"
+          [ "$REENVIAR" = "1" ] && query="${query:+$query&}reenviar=1"
+          # Primeira chamada acorda o app (Railway com sleep) antes do envio.
+          curl -s -o /dev/null --max-time 60 "$APP_URL/login" || true
+          curl -sS --fail-with-body --max-time 300 \
+            -H "Authorization: Bearer $CRON_SECRET" \
+            "$APP_URL/api/cron/relatorio-mensal${query:+?$query}"

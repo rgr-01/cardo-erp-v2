@@ -1,0 +1,513 @@
+{
+  "fonte": "2026-27 - Tabela de preços - V4.pdf",
+  "sha256": "a2e4de3af5118b66b5dee10bba0752783889cd922d41ef9b19cc13fbc5e76101",
+  "duplicatasIgnoradas": [
+    "AA227"
+  ],
+  "produtos": [
+    {
+      "fornecedor": "Koppert",
+      "produto": "RIZOKOP LIQ",
+      "ingredienteAtivo": "Bradyrhizobium japonicum",
+      "embalagem": "cx160ds (75ml/ds)",
+      "recomendacao": "TS 1-2DS e sulco 5-10DS(Soja)",
+      "textoOriginal": "RIZOKOP LIQ - cx160ds (75ml/ds) | TS 1-2DS e sulco 5-10DS(Soja)",
+      "observacao": null
+    },
+    {
+      "fornecedor": "Koppert",
+      "produto": "AZOKOP",
+      "ingredienteAtivo": "Azospirillum brasiliense",
+      "embalagem": "cx225ds(ds 100ml)",
+      "recomendacao": "TS ou sulco 1DS/ha (Soja)",
+      "textoOriginal": "AZOKOP - cx225ds(ds 100ml)| TS ou sulco 1DS/ha (Soja)",
+      "observacao": null
+    },
+    {
+      "fornecedor": "Koppert",
+      "produto": "BOVERIL EVO",
+      "ingredienteAtivo": "Beauveria bassiana PL63",
+      "embalagem": "5kg",
+      "recomendacao": "300-500gr/ha",
+      "textoOriginal": "BOVERIL EVO 5kg | 300-500gr/ha",
+      "observacao": null
+    },
+    {
+      "fornecedor": "Koppert",
+      "produto": "BUICK EVO",
+      "ingredienteAtivo": "Vírus Simnpv - Complexo Spodoptera spp",
+      "embalagem": "5 kg",
+      "recomendacao": "50 gr/ha",
+      "textoOriginal": "BUICK EVO - 5 kg I 50 gr/ha",
+      "observacao": null
+    },
+    {
+      "fornecedor": "Koppert",
+      "produto": "CARAVAN",
+      "ingredienteAtivo": "Bacillus pumillus CNPSo 3203",
+      "embalagem": "5L",
+      "recomendacao": "400 ml 1º e 400 ml 2º de fungicida",
+      "textoOriginal": "CARAVAN - 5L | 400 ml 1º e 400 ml 2º de fungicida",
+      "observacao": null
+    },
+    {
+      "fornecedor": "Koppert",
+      "produto": "DIPLOMATA EVO",
+      "ingredienteAtivo": "HearNPV - Helicoverpa armigera e ChinNPV - Crysodeixis includens (Falsa-medideira)",
+      "embalagem": "5L",
+      "recomendacao": "100 ml/ ha",
+      "textoOriginal": "DIPLOMATA EVO - 5L| 100 ml/ ha",
+      "observacao": null
+    },
+    {
+      "fornecedor": "Koppert",
+      "produto": "MACAN",
+      "ingredienteAtivo": "Bacillus velezensis CECT8237",
+      "embalagem": null,
+      "recomendacao": "200 ml 1º e 200 ml 2º de fungicida",
+      "textoOriginal": "MACAN - 200 ml 1º e 200 ml 2º de fungicida",
+      "observacao": null
+    },
+    {
+      "fornecedor": "Koppert",
+      "produto": "METARRIL WP",
+      "ingredienteAtivo": "Metarhizium anisopliae",
+      "embalagem": "5kg",
+      "recomendacao": "500 gr/ha",
+      "textoOriginal": "METARRIL WP - 5kg | 500 gr/ha",
+      "observacao": null
+    },
+    {
+      "fornecedor": "Koppert",
+      "produto": "OCTANE EC",
+      "ingredienteAtivo": "Isaria fumosorosea CEPA ESALQ 1296",
+      "embalagem": "5L",
+      "recomendacao": "1,0 Lt / 3 aplicação",
+      "textoOriginal": "OCTANE EC - 5L I 1,0 Lt / 3 aplicação",
+      "observacao": null
+    },
+    {
+      "fornecedor": "Koppert",
+      "produto": "STINGRAY",
+      "ingredienteAtivo": "Aschophyllum nodosum",
+      "embalagem": "10L",
+      "recomendacao": "TS 2ml/Kg I Sulco 200 ml/ha I V4 e R1 – 300 ml/ha",
+      "textoOriginal": "STINGRAY - 10L |TS 2ml/Kg I Sulco 200 ml/ha I V4 e R1 – 300 ml/ha",
+      "observacao": null
+    },
+    {
+      "fornecedor": "Koppert",
+      "produto": "TRIANUM DS",
+      "ingredienteAtivo": "Trichoderma harzianum CEPA T22",
+      "embalagem": "1kg",
+      "recomendacao": "1 - 2 gr/kg de semente",
+      "textoOriginal": "TRIANUM DS 1kg | 1 - 2 gr/kg de semente",
+      "observacao": null
+    },
+    {
+      "fornecedor": "Koppert",
+      "produto": "TRICHODERMIL SC",
+      "ingredienteAtivo": "Trichodermil harzianum CEPA 1306",
+      "embalagem": "5L",
+      "recomendacao": "TS 300ml/Sulco ou 500 via barra",
+      "textoOriginal": "TRICHODERMIL SC - 5L | TS 300ml/Sulco ou 500 via barra",
+      "observacao": null
+    },
+    {
+      "fornecedor": "Koppert",
+      "produto": "TRICHODERMIL SUPER",
+      "ingredienteAtivo": "Trichoderma harzianum CEPA 1306",
+      "embalagem": "5L",
+      "recomendacao": "Sulco 100ml/há |Via Barra 150-180ml/ha",
+      "textoOriginal": "TRICHODERMIL SUPER - 5L| Sulco 100ml/há |Via Barra 150-180ml/ha",
+      "observacao": null
+    },
+    {
+      "fornecedor": "Koppert",
+      "produto": "TRICHODERMIL FS",
+      "ingredienteAtivo": "Trichoderma asperelloides CEPA 1306",
+      "embalagem": "1L",
+      "recomendacao": "0,5ml/kg semente",
+      "textoOriginal": "TRICHODERMIL FS- 1L| 0,5ml/kg semente",
+      "observacao": null
+    },
+    {
+      "fornecedor": "Koppert",
+      "produto": "VERANEIO WP",
+      "ingredienteAtivo": "Bacillus amyloliquefaciens CEPA UMAF6614",
+      "embalagem": "1kg",
+      "recomendacao": "1 - 2 gr/kg de semente",
+      "textoOriginal": "VERANEIO WP - 1kg |1 - 2 gr/kg de semente",
+      "observacao": null
+    },
+    {
+      "fornecedor": "Andermatt",
+      "produto": "NOMUPROTEC",
+      "ingredienteAtivo": "Nomuria - Metarhizium rileyi 1x10.8UFC /g",
+      "embalagem": null,
+      "recomendacao": "100g/ha",
+      "textoOriginal": "NOMUPROTEC |100g/ha",
+      "observacao": null
+    },
+    {
+      "fornecedor": "Andermatt",
+      "produto": "SPODOVIR PLUS",
+      "ingredienteAtivo": "Vírus Simnpv19",
+      "embalagem": null,
+      "recomendacao": "50ml/ha",
+      "textoOriginal": "SPODOVIR PLUS |50ml/ha",
+      "observacao": null
+    },
+    {
+      "fornecedor": "Rede Agro",
+      "produto": "N-BATT-BRADY",
+      "ingredienteAtivo": "Bradyrhizobium japonicum e Bradyrhizobium diazoefficiens",
+      "embalagem": "cx400ds (50ml/ds)",
+      "recomendacao": "TS 1-2DS e sulco 5-10DS(Soja)",
+      "textoOriginal": "N-BATT-BRADY - cx400ds (50ml/ds) |TS 1-2DS e sulco 5-10DS(Soja)",
+      "observacao": null
+    },
+    {
+      "fornecedor": "Rede Agro",
+      "produto": "AZOBATT",
+      "ingredienteAtivo": "Azospirillum brasiliense",
+      "embalagem": "cx200ds(ds 100ml)",
+      "recomendacao": "TS ou sulco 1-2DS/ha (Soja)",
+      "textoOriginal": "AZOBATT - cx200ds(ds 100ml)| TS ou sulco 1-2DS/ha (Soja)",
+      "observacao": null
+    },
+    {
+      "fornecedor": "Brandt",
+      "produto": "BORO 10",
+      "ingredienteAtivo": "B 10%",
+      "embalagem": null,
+      "recomendacao": "1,0-2,0 L/ha",
+      "textoOriginal": "BORO 10 | 1,0-2,0 L/ha",
+      "observacao": null
+    },
+    {
+      "fornecedor": "Brandt",
+      "produto": "COMPLETO",
+      "ingredienteAtivo": "N, P2O5, K2, Zn, Ca, Mg, B, e Mn, Cu",
+      "embalagem": null,
+      "recomendacao": "1,0 – 1,5 L/ha",
+      "textoOriginal": "COMPLETO | 1,0 – 1,5 L/ha",
+      "observacao": null
+    },
+    {
+      "fornecedor": "Brandt",
+      "produto": "GENESIS",
+      "ingredienteAtivo": "Mo 2% e Zn 4%",
+      "embalagem": null,
+      "recomendacao": "120 ml/ha 1,5ml/kg semente - Milho",
+      "textoOriginal": "GENESIS | 120 ml/ha 1,5ml/kg semente - Milho",
+      "observacao": null
+    },
+    {
+      "fornecedor": "Brandt",
+      "produto": "MANNI-PLEX - CAL MG",
+      "ingredienteAtivo": "N 7%, Ca 5,3%, Mg 2,6%",
+      "embalagem": null,
+      "recomendacao": "1,0 L/ha (Pode dividir em 2 a 3 aplic)",
+      "textoOriginal": "MANNI-PLEX - CAL MG | 1,0 L/ha (Pode dividir em 2 a 3 aplic)",
+      "observacao": null
+    },
+    {
+      "fornecedor": "Brandt",
+      "produto": "MANNI-PLEX B-MOLY",
+      "ingredienteAtivo": "N 5%, B 3,3%, Mo 0,5% Co 0,02% e Ni 0,02%",
+      "embalagem": null,
+      "recomendacao": "1,5 L/ha",
+      "textoOriginal": "MANNI-PLEX B-MOLY | 1,5 L/ha",
+      "observacao": null
+    },
+    {
+      "fornecedor": "Brandt",
+      "produto": "MANNI-PLEX K",
+      "ingredienteAtivo": "K 20%",
+      "embalagem": null,
+      "recomendacao": "1,0 – 2,0 L/ha",
+      "textoOriginal": "MANNI-PLEX K | 1,0 – 2,0 L/ha",
+      "observacao": null
+    },
+    {
+      "fornecedor": "Brandt",
+      "produto": "N3200",
+      "ingredienteAtivo": "N 32% (3 fontes de N)",
+      "embalagem": null,
+      "recomendacao": "3,0 a 6,0 L/ha",
+      "textoOriginal": "N3200 | 3,0 a 6,0 L/ha",
+      "observacao": null
+    },
+    {
+      "fornecedor": "Brandt",
+      "produto": "PLANT START",
+      "ingredienteAtivo": "N 8%, P2O5 27% e K2O 2%",
+      "embalagem": null,
+      "recomendacao": "500 ml/ ha",
+      "textoOriginal": "PLANT START | 500 ml/ ha",
+      "observacao": null
+    },
+    {
+      "fornecedor": "Brandt",
+      "produto": "SMART COBRE",
+      "ingredienteAtivo": "S 3% (SO3) e Cu 6%",
+      "embalagem": null,
+      "recomendacao": null,
+      "textoOriginal": "SMART COBRE",
+      "observacao": null
+    },
+    {
+      "fornecedor": "Brandt",
+      "produto": "SMART MANGANÊS",
+      "ingredienteAtivo": "Mn 6%",
+      "embalagem": null,
+      "recomendacao": "1,0 - 2,0 L/ha",
+      "textoOriginal": "SMART MANGANÊS |1,0 - 2,0 L/ha",
+      "observacao": null
+    },
+    {
+      "fornecedor": "Brandt",
+      "produto": "SMART QUATRO PLUS",
+      "ingredienteAtivo": "N 5% S 2% B 5% Mn 2% Mo 0,05% e Zn 2%",
+      "embalagem": null,
+      "recomendacao": "1,5 - 2,0 L/ha",
+      "textoOriginal": "SMART QUATRO PLUS | 1,5 - 2,0 L/ha",
+      "observacao": null
+    },
+    {
+      "fornecedor": "Brandt",
+      "produto": "SMART TRIO",
+      "ingredienteAtivo": "N 4%, S 3%, Mn 3%, Zn 3% e B 0,25%",
+      "embalagem": null,
+      "recomendacao": "1,5 L/ha",
+      "textoOriginal": "SMART TRIO | 1,5 L/ha",
+      "observacao": null
+    },
+    {
+      "fornecedor": "Brandt",
+      "produto": "SMART ZINCO",
+      "ingredienteAtivo": "N 6%,S 3%, ZN 6%",
+      "embalagem": null,
+      "recomendacao": "0,5 a 1,0 L/ha",
+      "textoOriginal": "SMART ZINCO | 0,5 a 1,0 L/ha",
+      "observacao": null
+    },
+    {
+      "fornecedor": "Brandt",
+      "produto": "SOLUFORCE",
+      "ingredienteAtivo": "Bacillus Licheniformis",
+      "embalagem": null,
+      "recomendacao": "Via barra ou sulco 150-300ml/ha TS 100ml/ha",
+      "textoOriginal": "SOLUFORCE | Via barra ou sulco 150-300ml/ha TS 100ml/ha",
+      "observacao": null
+    },
+    {
+      "fornecedor": "Brandt",
+      "produto": "ULTRANOD",
+      "ingredienteAtivo": "Co 1% Mo 10% e Ni 0,25%",
+      "embalagem": null,
+      "recomendacao": "0,75-1ml/kg semente Via barra 150ml/ha - Soja",
+      "textoOriginal": "ULTRANOD | 0,75-1ml/kg semente Via barra 150ml/ha - Soja",
+      "observacao": null
+    },
+    {
+      "fornecedor": "Brandt",
+      "produto": "SEEDFLOW NUTRA",
+      "ingredienteAtivo": "Mn 3%, Mo 7,75%, Fe 2%, B 0,25%, Cu 0,25%, Co 0,77% e Ni 0,03%",
+      "embalagem": "3,5kg",
+      "recomendacao": "2,8g/kg semente ou 140g/50kg semente",
+      "textoOriginal": "SEEDFLOW NUTRA 3,5kg | 2,8g/kg semente ou 140g/50kg semente",
+      "observacao": null
+    },
+    {
+      "fornecedor": "Brandt",
+      "produto": "SEEDFLOW NUTRA",
+      "ingredienteAtivo": "Mn 3%, Mo 7,75%, Fe 2%, B 0,25%, Cu 0,25%, Co 0,77% e Ni 0,03%",
+      "embalagem": "6,2kg",
+      "recomendacao": "2,8g/kg semente ou 140g/50kg semente",
+      "textoOriginal": "SEEDFLOW NUTRA 6,2kg | 2,8g/kg semente ou 140g/50kg semente",
+      "observacao": null
+    },
+    {
+      "fornecedor": "Brandt",
+      "produto": "SEEDFLOW MICRO",
+      "ingredienteAtivo": "Zn 13%, Mn 1,5%, B 2%, Cu 2% e Mo 6%",
+      "embalagem": "6,4kg",
+      "recomendacao": "40-60g/60000 sementes",
+      "textoOriginal": "SEEDFLOW MICRO 6,4kg | 40-60g/60000 sementes",
+      "observacao": null
+    },
+    {
+      "fornecedor": "Brandt",
+      "produto": "SEEDFLOW MICRO",
+      "ingredienteAtivo": "Zn 13%, Mn 1,5%, B 2%, Cu 2% e Mo 6%",
+      "embalagem": "11,3kg",
+      "recomendacao": "40-60g/60000 sementes",
+      "textoOriginal": "SEEDFLOW MICRO 11,3kg | 40-60g/60000 sementes",
+      "observacao": null
+    },
+    {
+      "fornecedor": "Gigamix",
+      "produto": "RAIZEN",
+      "ingredienteAtivo": "Co 0,28%, Mo 2,80% e Si 3,15%, p2o5 2%, Ca 4,8%, Mg 2%",
+      "embalagem": null,
+      "recomendacao": "3 – 5 ml/Kg de semente I Foliar - 300 ml-2 aplic",
+      "textoOriginal": "RAIZEN | 3 – 5 ml/Kg de semente I Foliar - 300 ml-2 aplic",
+      "observacao": null
+    },
+    {
+      "fornecedor": "Gigamix",
+      "produto": "RAIZEN EVOLUTION",
+      "ingredienteAtivo": "Co 0,28%, Mo 2,80% e Si 3,15%, p2o5 2%, Ca 4,8%, Mg 2%, Ni 0,28%",
+      "embalagem": null,
+      "recomendacao": null,
+      "textoOriginal": "RAIZEN EVOLUTION | 3 – 5 ml/Kg de semente I Folha- 150 a 250ml - 2",
+      "observacao": "Recomendação cortada no PDF; não importada. Consulte o texto original."
+    },
+    {
+      "fornecedor": "Gigamix",
+      "produto": "SCUDERO",
+      "ingredienteAtivo": "P2O5 2%, Ca 6,9%, Mg 1,9% Si 2,75%",
+      "embalagem": null,
+      "recomendacao": "1º fungicida - 600-750ml/ha + 2º fungicida - 600-750ml/ha",
+      "textoOriginal": "SCUDERO | 1º fungicida - 600-750ml/ha + 2º fungicida - 600-750ml/ha",
+      "observacao": null
+    },
+    {
+      "fornecedor": "Gigamix",
+      "produto": "SARA",
+      "ingredienteAtivo": "Ac Salicilico 25%, Mo 2,4% e N 1,1%",
+      "embalagem": null,
+      "recomendacao": null,
+      "textoOriginal": "SARA | 1º fungicida - 100-300ml/ha + 2º e/ou 3º fungicida - 100-",
+      "observacao": "Recomendação cortada no PDF; não importada. Consulte o texto original."
+    },
+    {
+      "fornecedor": "Gigamix",
+      "produto": "PLUS",
+      "ingredienteAtivo": "P2O5 2%, Ca 5,6%, Mg 4,8%, Si 8,0%",
+      "embalagem": null,
+      "recomendacao": "500g/ha cada apl (Junto ao herbicida + 1º e 2º de fungicida)",
+      "textoOriginal": "PLUS| 500g/ha cada apl (Junto ao herbicida + 1º e 2º de fungicida)",
+      "observacao": null
+    },
+    {
+      "fornecedor": "Alvo",
+      "produto": "ACCERT",
+      "ingredienteAtivo": "Desalojante",
+      "embalagem": null,
+      "recomendacao": "300ml",
+      "textoOriginal": "ACCERT | 300ml",
+      "observacao": "O PDF informa apenas 300ml após o separador; mantido como recomendação, sem inferir embalagem ou dose por hectare."
+    },
+    {
+      "fornecedor": "Alvo",
+      "produto": "CERTO",
+      "ingredienteAtivo": "Cloreto Benzalcônio 30%",
+      "embalagem": null,
+      "recomendacao": "700ml a 1,0 L/ha / Mofo Branco",
+      "textoOriginal": "CERTO | 700ml a 1,0 L/ha / Mofo Branco",
+      "observacao": null
+    },
+    {
+      "fornecedor": "Alvo",
+      "produto": "DIRETO",
+      "ingredienteAtivo": "Adjuvante - Inseticidas e fungicidas e Biologicos",
+      "embalagem": null,
+      "recomendacao": "50 ml/ha",
+      "textoOriginal": "DIRETO| 50 ml/ha",
+      "observacao": null
+    },
+    {
+      "fornecedor": "Alvo",
+      "produto": "DIRETO UBV",
+      "ingredienteAtivo": "Adjuvante - Malathion UL (Controle Bicudo)",
+      "embalagem": null,
+      "recomendacao": "30 ml/ha",
+      "textoOriginal": "DIRETO UBV| 30 ml/ha",
+      "observacao": null
+    },
+    {
+      "fornecedor": "Alvo",
+      "produto": "EXATO",
+      "ingredienteAtivo": "Adjuvante - Herbicidas",
+      "embalagem": null,
+      "recomendacao": "50 ml/ha",
+      "textoOriginal": "EXATO | 50 ml/ha",
+      "observacao": null
+    },
+    {
+      "fornecedor": "Alvo",
+      "produto": "KOMPAT",
+      "ingredienteAtivo": "Destalhar caldas",
+      "embalagem": null,
+      "recomendacao": "150ml a 500ml/ha",
+      "textoOriginal": "KOMPAT| 150ml a 500ml/ha",
+      "observacao": null
+    },
+    {
+      "fornecedor": "Alvo",
+      "produto": "LIMPO",
+      "ingredienteAtivo": "Limpa tanque",
+      "embalagem": null,
+      "recomendacao": "1,0 L/300 Litros d’água",
+      "textoOriginal": "LIMPO | 1,0 L/300 Litros d’água",
+      "observacao": null
+    },
+    {
+      "fornecedor": "Alvo",
+      "produto": "Zero",
+      "ingredienteAtivo": "Antiespuma",
+      "embalagem": null,
+      "recomendacao": "0,3/1000L",
+      "textoOriginal": "Zero I 0,3/1000L",
+      "observacao": null
+    },
+    {
+      "fornecedor": "Alvo",
+      "produto": "DIRECT",
+      "ingredienteAtivo": "Adjuvante - Inseticidas e fungicidas e Biologicos",
+      "embalagem": null,
+      "recomendacao": "50 ml/ha",
+      "textoOriginal": "DIRECT| 50 ml/ha",
+      "observacao": null
+    },
+    {
+      "fornecedor": "Alvo",
+      "produto": "PRECISO",
+      "ingredienteAtivo": "Adjuvante - Herbicidas",
+      "embalagem": null,
+      "recomendacao": "50 ml/ha",
+      "textoOriginal": "PRECISO | 50 ml/ha",
+      "observacao": null
+    },
+    {
+      "fornecedor": "Analyce",
+      "produto": "AA221",
+      "ingredienteAtivo": "Sorgo - TSI (Cruiser+Maxim+Arvatico)+Benefic",
+      "embalagem": "1 sc",
+      "recomendacao": "1 sc planta 2,7 ha",
+      "textoOriginal": "AA221 | 1 sc planta 2,7 ha",
+      "observacao": null
+    },
+    {
+      "fornecedor": "Analyce",
+      "produto": "AA227",
+      "ingredienteAtivo": "Sorgo - TSI (Cruiser+Maxim+Arvatico)+Benefic",
+      "embalagem": "1 sc",
+      "recomendacao": "1 sc planta 2,7 ha",
+      "textoOriginal": "AA227 | 1 sc planta 2,7 ha",
+      "observacao": null
+    },
+    {
+      "fornecedor": "Analyce",
+      "produto": "AA324",
+      "ingredienteAtivo": "Sorgo - TSI (Cruiser+Maxim+Arvatico)+Benefic",
+      "embalagem": "1 sc",
+      "recomendacao": "1 sc planta 2,7 ha",
+      "textoOriginal": "AA324 | 1 sc planta 2,7 ha",
+      "observacao": null
+    }
+  ]
+}

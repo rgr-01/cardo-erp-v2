@@ -1,0 +1,43 @@
+name: Verificação contínua
+
+# Desativada: roda só se alguém clicar em "Run workflow" no GitHub.
+# Para reativar a execução automática, volte push/pull_request aqui.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  qualidade:
+    name: Lint, tipos, testes e build
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Baixar código
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Instalar dependências
+        run: npm ci
+
+      - name: Gerar cliente Prisma
+        run: npx prisma generate
+
+      - name: Verificar lint
+        run: npm run lint
+
+      - name: Verificar TypeScript
+        run: npm run typecheck
+
+      - name: Executar testes
+        run: npm run test:run
+
+      - name: Gerar build de produção
+        run: npm run build

@@ -1,0 +1,9 @@
+{
+  "folders": [
+    { "name": "Web", "path": "." },
+    { "name": "App", "path": "cardo_erp_app" }
+  ],
+  "settings": {
+    "files.exclude": { "cardo_erp_app": true }
+  }
+}

@@ -1,0 +1,59 @@
+{
+  "expo": {
+    "name": "Cardo AI - Agro",
+    "slug": "rede-agro-mobile",
+    "version": "1.7.1",
+    "orientation": "portrait",
+    "icon": "./assets/images/icon.png",
+    "scheme": "redeagromobile",
+    "userInterfaceStyle": "automatic",
+    "backgroundColor": "#0F1F4D",
+    "android": {
+      "package": "com.redeagro.mobile",
+      "adaptiveIcon": {
+        "backgroundColor": "#0F1F4D",
+        "foregroundImage": "./assets/images/android-icon-foreground.png",
+        "backgroundImage": "./assets/images/android-icon-background.png",
+        "monochromeImage": "./assets/images/android-icon-monochrome.png"
+      },
+      "predictiveBackGestureEnabled": false,
+      "versionCode": 11
+    },
+    "web": {
+      "output": "static",
+      "favicon": "./assets/images/favicon.png"
+    },
+    "plugins": [
+      "expo-router",
+      [
+        "expo-splash-screen",
+        {
+          "backgroundColor": "#0F1F4D",
+          "image": "./assets/images/splash-icon.png",
+          "imageWidth": 200
+        }
+      ],
+      "expo-secure-store",
+      "expo-sqlite",
+      "expo-audio",
+      "expo-sharing",
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "O Cardo AI usa sua localizaÃ§Ã£o para marcar a posiÃ§Ã£o da fazenda do cliente."
+        }
+      ]
+    ],
+    "experiments": {
+      "typedRoutes": true,
+      "reactCompiler": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "2a8cd233-dd3c-4bef-8903-e0ddf63e0444"
+      }
+    },
+    "owner": "claudio_w"
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm run *)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\\\\n\" http://localhost:3000/vendas --max-time 5)",
+      "Bash(npx playwright *)",
+      "Bash(pg_dump --version)",
+      "Bash(node -e \"console.log\\(require\\('./node_modules/@prisma/client/package.json'\\).version\\)\")",
+      "Bash(mkdir -p \"C:\\\\Users\\\\CLAUDI~1\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\c--Users-Claudio-Wontroba-Documents-Rede-Agro\\\\08ab8b38-6a8f-4e20-b15f-bc3e5fe5644d\\\\scratchpad\\\\backup\")",
+      "Bash(node \"C:\\\\Users\\\\CLAUDI~1\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\c--Users-Claudio-Wontroba-Documents-Rede-Agro\\\\08ab8b38-6a8f-4e20-b15f-bc3e5fe5644d\\\\scratchpad\\\\backup-safra.mjs\")",
+      "Bash(node -r dotenv/config \"C:\\\\Users\\\\CLAUDI~1\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\c--Users-Claudio-Wontroba-Documents-Rede-Agro\\\\08ab8b38-6a8f-4e20-b15f-bc3e5fe5644d\\\\scratchpad\\\\backup-safra.mjs\" dotenv_config_path=.env)",
+      "Bash(npx tsx *)",
+      "Bash(npx prisma *)",
+      "WebSearch",
+      "Bash(npx tsc *)",
+      "Bash(node -e ' *)",
+      "Bash(git commit *)",
+      "Bash(git push *)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\\\\n\" https://redeagro.up.railway.app/vendas --max-time 10)",
+      "Bash(curl -s -D - -o /dev/null \"https://redeagro.up.railway.app/dashboard\" --max-time 10)",
+      "Bash(npm install *)",
+      "Bash(git stash *)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\\\\n\" http://localhost:3000/login)",
+      "Bash(npx eslint *)",
+      "Bash(git commit -m ' *)",
+      "Bash(cd \"c:\\\\Users\\\\Claudio\\\\Documents\\\\GitHub\\\\rede-agro\" && ls .. 2>/dev/null; find . -maxdepth 2 -iname \"*mobile*\" -o -iname \"*expo*\" 2>/dev/null | grep -v node_modules)",
+      "Read(//c/Users/Claudio/Documents/GitHub/**)"
+    ]
+  }
+}
